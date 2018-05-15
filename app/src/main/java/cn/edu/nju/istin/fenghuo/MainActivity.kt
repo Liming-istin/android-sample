@@ -10,10 +10,10 @@ import java.net.*
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
-    private final var TAG = MainActivity::class.java.name
-    private final var BLUETOOTH_DEVICE_NAME = "bt-pan"
-    private final var PORT = 5005
-    private final var SEND_SERVER_IP = "225.0.0.1"
+    private val TAG = MainActivity::class.java.name
+    private  val BLUETOOTH_DEVICE_NAME = "bt-pan"
+    private  val PORT = 5005
+    private  val SEND_SERVER_IP = "225.0.0.1"
 
     var isRunning: Boolean = true
 
@@ -26,10 +26,10 @@ class MainActivity : AppCompatActivity() {
             if(toSend.isEmpty()) return@setOnClickListener
             Thread({
                 try {
-                    var sendSocket: DatagramSocket = DatagramSocket()
-                    var msg = toSend + Calendar.getInstance().time.toString()
-                    var buf: ByteArray = msg.toByteArray()
-                    var sendPacket: DatagramPacket = DatagramPacket(buf, buf.size, Inet4Address.getByName(SEND_SERVER_IP), PORT)
+                    val sendSocket = DatagramSocket()
+                    val msg = toSend + Calendar.getInstance().time.toString()
+                    val buf: ByteArray = msg.toByteArray()
+                    val sendPacket = DatagramPacket(buf, buf.size, Inet4Address.getByName(SEND_SERVER_IP), PORT)
                     sendSocket.send(sendPacket)
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -47,10 +47,6 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    override fun onResume() {
-        super.onResume()
-    }
-
     inner class ReceiveListenThread(address: Inet4Address?) : Runnable {
         private var addr = address
         override fun run() {
@@ -61,12 +57,12 @@ class MainActivity : AppCompatActivity() {
 
             while (isRunning) {
                 try {
-                    var socket = DatagramSocket(PORT, addr)
-                    var data = ByteArray(1024)
-                    var packet = DatagramPacket(data, data.size)
+                    val socket = DatagramSocket(PORT, addr)
+                    val data = ByteArray(1024)
+                    val packet = DatagramPacket(data, data.size)
                     socket.receive(packet)
-                    var msgReceived = String(packet.data, packet.offset, packet.length)
-                    Log.i(TAG, "set " + msgReceived)
+                    val msgReceived = String(packet.data, packet.offset, packet.length)
+                    Log.i(TAG, "set $msgReceived")
                     runOnUiThread({
                         (findViewById(R.id.receiveDisplay) as TextView).text = msgReceived
                     })
@@ -78,15 +74,15 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    fun getMyIpAddress(): InetAddress? {
+    private fun getMyIpAddress(): InetAddress? {
         var netInterface: NetworkInterface? = NetworkInterface.getByName(BLUETOOTH_DEVICE_NAME)
         if (netInterface == null) {
-            Log.e(TAG, "Unable to find a device named " + BLUETOOTH_DEVICE_NAME)
+            Log.e(TAG, "Unable to find a device named $BLUETOOTH_DEVICE_NAME")
             return null
         }
-        var ipAddresses: Enumeration<InetAddress> = netInterface.inetAddresses
+        val ipAddresses: Enumeration<InetAddress> = netInterface.inetAddresses
         while (ipAddresses.hasMoreElements()) {
-            var addr: InetAddress = ipAddresses.nextElement()
+            val addr: InetAddress = ipAddresses.nextElement()
             if (addr is Inet4Address) {
                 Log.i(TAG, "get ip " + addr.toString())
                 return addr
